@@ -36,7 +36,7 @@ def handle_audio_file(message):
         bot.reply_to(message, 'Downloaded!')
 
         if audio_path.endswith('.mp3'):
-            mp3_audiopath = '/received/' + message.audio.file_name
+            mp3_audiopath = 'received/' + message.audio.file_name
             wav_audiopath = mp3_audiopath.replace('.mp3', '.wav')
             try:
                 subprocess.call(['ffmpeg', '-i', mp3_audiopath,
