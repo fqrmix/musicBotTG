@@ -36,8 +36,8 @@ def handle_audio_file(message):
         bot.reply_to(message, 'Downloaded!')
 
         if audio_path.endswith('.mp3'):
-            mp3_audiopath = src
-            wav_audiopath = src.replace('.mp3', '.wav')
+            mp3_audiopath = '/received/' + message.audio.file_name
+            wav_audiopath = mp3_audiopath.replace('.mp3', '.wav')
             try:
                 sound = AudioSegment.from_mp3(downloaded_file)
                 sound.export(downloaded_file, format="wav")
