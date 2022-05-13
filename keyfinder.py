@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import IPython.display as ipd
 import librosa
 import librosa.display
 
@@ -100,3 +99,40 @@ class Tonal_Fragment(object):
         plt.colorbar()
         plt.tight_layout()
         plt.show()
+
+
+class Tonality(object):
+    def __init__(self):
+        pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+        keys = [pitches [i] + ' major' for i in range(12)] + [pitches [i] + ' minor' for i in range(12)]
+
+        chords_for_keys = {
+            'С major': '',
+            'С# major': '',
+            'D major': '',
+            'D# major': '',
+            'E major': '',
+            'F major': '',
+            'F# major': '',
+            'G major': '',
+            'G# major': '',
+            'A major': '',
+            'A# major': '',
+            'B major': '',
+
+            'С minor': 'Cm Ddim Eb Fm Gm Ab Bb',
+            'С# minor': 'C#m D#dim E F#m G#m A B',
+            'D minor': 'Dm Edim F Gm Am Bb C',
+            'D# minor': 'D#m Fdim F# G#m A#m B C#',
+            'E minor': 'Em F#dim G Am Bm C D',
+            'F minor': 'Fm Gdim Ab Bbm Cm Db Eb',
+            'F# minor': 'F#m G#dim A Bm C#m D E',
+            'G minor': 'Gm Adim Bb Cm Dm Eb F',
+            'G# minor': 'G#m A#dim B C#m D#m E F#',
+            'A minor': 'Am Bdim C Dm Em F G',
+            'A# minor': 'A#m Cdim C# D#m E#m F#	G#',
+            'B minor': 'Bm C#dim D Em F#m G A',
+        }
+
+        print(keys)
+

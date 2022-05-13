@@ -35,7 +35,7 @@ def handle_audio_file(message):
 
         bot.reply_to(message, 'Downloaded!')
 
-        if audio_path.endswith('.mp3'):
+        if audio_path.endswith('.mp3') and os.path.isfile(audio_path):
             mp3_audiopath = 'received/' + message.audio.file_name
             wav_audiopath = mp3_audiopath.replace('.mp3', '.wav')
             try:
