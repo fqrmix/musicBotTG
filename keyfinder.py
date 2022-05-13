@@ -80,7 +80,7 @@ class Tonal_Fragment(object):
             print(key, '\t', f'{corr:6.3f}')
 
     # printout of the key determined by the algorithm; if another key is close, that key is mentioned
-    def print_key(self, likely_key, alt_key):
+    def print_key(self):
         print("likely key: ", max(self.key_dict, key=self.key_dict.get), ", correlation: ", self.bestcorr, sep='')
         likely_key = max(self.key_dict, key=self.key_dict.get)
         alt_key = self.altkey
