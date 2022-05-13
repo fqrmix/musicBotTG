@@ -37,7 +37,11 @@ def handle_audio_file(message):
         if audio_path.endswith('.mp3'):
             mp3_audiopath = src
             wav_audiopath = src.replace('.mp3', '.wav')
-            ffmpeg -i mp3_audiopath wav_audiopath
+            try:
+                ffmpeg -i mp3_audiopath wav_audiopath
+                print(f'File {mp3_audiopath} was converted to {wav_audiopath}')
+            except Exception as e:
+                print(e)
             audio_path = wav_audiopath
 
         y, sr = librosa.load(audio_path)
