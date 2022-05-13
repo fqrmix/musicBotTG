@@ -39,8 +39,8 @@ def handle_audio_file(message):
             mp3_audiopath = src
             wav_audiopath = src.replace('.mp3', '.wav')
             try:
-                sound = AudioSegment.from_mp3(mp3_audiopath)
-                sound.export(wav_audiopath, format="wav")
+                sound = AudioSegment.from_mp3(downloaded_file)
+                sound.export(downloaded_file, format="wav")
                 print(f'File {mp3_audiopath} was converted to {wav_audiopath}')
             except Exception as e:
                 print(e)
