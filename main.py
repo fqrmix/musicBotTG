@@ -1,11 +1,13 @@
 import telebot
 from keyfinder import *
+from definitions import *
 
-token = 'mytoken'
+print(ROOT_DIR)
+
 botWelcomeMessage = 'Привет!\nДля декодинга аудио файла просто пришли его мне!'
 
 
-bot = telebot.TeleBot(token)
+bot = telebot.TeleBot(TOKEN)
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -20,7 +22,7 @@ def handle_audio_file(message):
         file_info = bot.get_file(message.audio.file_id)
         downloaded_file = bot.download_file(file_info.file_path)
 
-        src = "C:/Users/svsergeev/PycharmProjects/musicBotTG/received/" + message.audio.file_name
+        src = ROOT_DIR + "/received/" + message.audio.file_name
 
         try:
             with open(src, 'wb') as new_file:
@@ -30,11 +32,8 @@ def handle_audio_file(message):
 
         bot.reply_to(message, 'Downloaded!')
         y, sr = librosa.load(src)
-        print('librosa.load')
         y_harmonic, y_percussive = librosa.effects.hpss(y)
-        print('librosa.effects')
         downloaded_audio = Tonal_Fragment(y_harmonic, sr, tend=22)
-        print('Tonal Fragment')
         print(downloaded_audio.print_key())
 
     except Exception as e:

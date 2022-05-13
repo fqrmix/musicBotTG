@@ -5,11 +5,12 @@ import librosa
 import librosa.display
 
 
-# class that uses the librosa library to analyze the key that an mp3 is in
-# arguments:
-#     waveform: an mp3 file loaded by librosa, ideally separated out from any percussive sources
-#     sr: sampling rate of the mp3, which can be obtained when the file is read with librosa
-#     tstart and tend: the range in seconds of the file to be analyzed; default to the beginning and end of file if not specified
+# class that uses the librosa library to analyze the key that an mp3 is in arguments: waveform: an mp3 file loaded by
+# librosa, ideally separated out from any percussive sources sr: sampling rate of the mp3, which can be obtained when
+# the file is read with librosa tstart and tend: the range in seconds of the file to be analyzed; default to the
+# beginning and end of file if not specified
+
+
 class Tonal_Fragment(object):
     def __init__(self, waveform, sr, tstart=None, tend=None):
         self.waveform = waveform
