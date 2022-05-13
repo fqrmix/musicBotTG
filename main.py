@@ -42,9 +42,10 @@ def handle_audio_file(message):
                 subprocess.call(['ffmpeg', '-i', mp3_audiopath,
                                  wav_audiopath])
                 print(f'File {mp3_audiopath} was converted to {wav_audiopath}')
+                audio_path = wav_audiopath
             except Exception as e:
                 print(e)
-            audio_path = wav_audiopath
+
 
         y, sr = librosa.load(audio_path)
         y_harmonic, y_percussive = librosa.effects.hpss(y)
