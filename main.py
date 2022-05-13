@@ -1,6 +1,7 @@
 import telebot
 from keyfinder import *
 from definitions import *
+from pydub import AudioSegment
 
 print(ROOT_DIR)
 
@@ -38,7 +39,8 @@ def handle_audio_file(message):
             mp3_audiopath = src
             wav_audiopath = src.replace('.mp3', '.wav')
             try:
-                ffmpeg -i mp3_audiopath wav_audiopath
+                sound = AudioSegment.from_mp3(mp3_audiopath)
+                sound.export(wav_audiopath, format="wav")
                 print(f'File {mp3_audiopath} was converted to {wav_audiopath}')
             except Exception as e:
                 print(e)
