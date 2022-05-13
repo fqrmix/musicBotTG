@@ -22,7 +22,9 @@ def handle_audio_file(message):
         file_info = bot.get_file(message.audio.file_id)
         downloaded_file = bot.download_file(file_info.file_path)
 
-        src = ROOT_DIR + "/received/" + message.audio.file_name
+        src = ROOT_DIR + "/received/"
+
+        audio_path = src + message.audio.file_name
 
         try:
             with open(src, 'wb') as new_file:
@@ -32,7 +34,13 @@ def handle_audio_file(message):
 
         bot.reply_to(message, 'Downloaded!')
 
-        y, sr = librosa.load(src)
+        if audio_path.endswith('.mp3'):
+            mp3_audiopath = src
+            wav_audiopath = src.replace('.mp3', '.wav')
+            ffmpeg -i mp3_audiopath wav_audiopath
+            audio_path = wav_audiopath
+
+        y, sr = librosa.load(audio_path)
         y_harmonic, y_percussive = librosa.effects.hpss(y)
         downloaded_audio = Tonal_Fragment(y_harmonic, sr, tend=22)
         tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
