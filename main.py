@@ -31,9 +31,12 @@ def handle_audio_file(message):
             print(exp)
 
         bot.reply_to(message, 'Downloaded!')
+
         y, sr = librosa.load(src)
         y_harmonic, y_percussive = librosa.effects.hpss(y)
         downloaded_audio = Tonal_Fragment(y_harmonic, sr, tend=22)
+        tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
+        print(tempo)
         print(downloaded_audio.print_key())
 
     except Exception as e:
