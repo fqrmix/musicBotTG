@@ -80,10 +80,13 @@ class Tonal_Fragment(object):
             print(key, '\t', f'{corr:6.3f}')
 
     # printout of the key determined by the algorithm; if another key is close, that key is mentioned
-    def print_key(self):
+    def print_key(self, likely_key, alt_key):
         print("likely key: ", max(self.key_dict, key=self.key_dict.get), ", correlation: ", self.bestcorr, sep='')
+        likely_key = max(self.key_dict, key=self.key_dict.get)
+        alt_key = self.altkey
         if self.altkey is not None:
             print("also possible: ", self.altkey, ", correlation: ", self.altbestcorr, sep='')
+        return likely_key, alt_key
 
     # prints a chromagram of the file, showing the intensity of each pitch class over time
     def chromagram(self, title=None):

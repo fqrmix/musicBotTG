@@ -51,7 +51,12 @@ def handle_audio_file(message):
         downloaded_audio = Tonal_Fragment(y_harmonic, sr, tend=22)
         tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
         print(tempo)
-        print(downloaded_audio.print_key())
+        likely_key, alt_key = downloaded_audio.print_key()
+
+        if alt_key is not None:
+            bot.reply_to(message, f'Song key: {likely_key}\n Maybe it can be a: {alt_key}')
+        else:
+            bot.reply_to(message, f'Song key:{likely_key}')
 
     except Exception as e:
         bot.reply_to(message, e)
