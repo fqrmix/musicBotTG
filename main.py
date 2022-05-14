@@ -1,9 +1,6 @@
 import telebot
 from keyfinder import *
 from definitions import *
-import subprocess
-
-print(ROOT_DIR)
 
 botWelcomeMessage = 'Привет!\nДля декодинга аудио файла просто пришли его мне!'
 
@@ -30,14 +27,14 @@ def handle_audio_file(message):
         try:
             with open(audio_path, 'wb') as new_file:
                 new_file.write(downloaded_file)
-        except Exception as exp:
-            print(exp)
+        except Exception as e:
+            print(e)
 
         bot.reply_to(message, 'Downloaded!')
 
         y, sr = librosa.load(audio_path, sr=11025)
         y_harmonic, y_percussive = librosa.effects.hpss(y)
-        downloaded_audio = Tonal_Fragment(y_harmonic, sr, tend=22)
+        downloaded_audio = Tonal_Fragment(y_harmonic, sr, tstart=20 tend=42)
         tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
         print(tempo)
         likely_key, alt_key = downloaded_audio.print_key()

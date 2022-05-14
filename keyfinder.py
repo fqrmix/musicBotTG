@@ -107,12 +107,12 @@ class Tonality(object):
         keys = [pitches [i] + ' major' for i in range(12)] + [pitches [i] + ' minor' for i in range(12)]
 
         chords_for_keys = {
-            'С major': '',
-            'С# major': '',
-            'D major': '',
-            'D# major': '',
-            'E major': '',
-            'F major': '',
+            'С major': {1:'C', 2:'Dm', 3:'Em', 4:'F', 5:'G', 6:'Am', 7:'Bm[dim]'},
+            'С# major': {1:'C#', 2:'D#m', 3:'Fm', 4:'F#', 5:'G#', 6:'A#m', 7:'Cm[dim]'},
+            'D major': {1:'D', 2:'Em', 3:'F#m', 4:'G', 5:'A', 6:'Bm', 7:'C#m[dim]'}, 
+            'D# major': {1:'D#', 2:'Fm', 3:'Gm', 4:'G#', 5:'A#', 6:'Cm', 7:'Dm[dim]'},
+            'E major': {1:'E', 2:'F#m', 3:'G#m', 4:'A', 5:'B', 6:'C#m', 7:'D#m[dim]'},
+            'F major': {1:'F', 2:'Gm', 3:'Am', 4:'A#', 5:'C', 6:'Dm', 7:'Em[dim]'},
             'F# major': '',
             'G major': '',
             'G# major': '',
