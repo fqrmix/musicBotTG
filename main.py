@@ -28,23 +28,12 @@ def handle_audio_file(message):
         audio_path = src + message.audio.file_name
 
         try:
-            with open(src, 'wb') as new_file:
+            with open(audio_path, 'wb') as new_file:
                 new_file.write(downloaded_file)
         except Exception as exp:
             print(exp)
 
         bot.reply_to(message, 'Downloaded!')
-
-        if audio_path.endswith('.mp3') and os.path.isfile(audio_path):
-            mp3_audiopath = 'received/' + message.audio.file_name
-            wav_audiopath = mp3_audiopath.replace('.mp3', '.wav')
-            try:
-                subprocess.call(['ffmpeg', '-i', mp3_audiopath,
-                                 wav_audiopath])
-                print(f'File {mp3_audiopath} was converted to {wav_audiopath}')
-                audio_path = wav_audiopath
-            except Exception as e:
-                print(e)
 
         y, sr = librosa.load(audio_path, sr=11025)
         y_harmonic, y_percussive = librosa.effects.hpss(y)
@@ -57,13 +46,9 @@ def handle_audio_file(message):
             bot.reply_to(message, f'Song key: {likely_key}\n Maybe it can be a: {alt_key}')
         else:
             bot.reply_to(message, f'Song key:{likely_key}')
-
     except Exception as e:
         bot.reply_to(message, e)
 
 
 if __name__ == '__main__':
     bot.infinity_polling()
-
-
-
