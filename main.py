@@ -34,7 +34,7 @@ def handle_audio_file(message):
 
         y, sr = librosa.load(audio_path, sr=11025)
         y_harmonic, y_percussive = librosa.effects.hpss(y)
-        downloaded_audio = Tonal_Fragment(y_harmonic, sr, tstart=20 tend=42)
+        downloaded_audio = Tonal_Fragment(y_harmonic, sr, tend=22)
         tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
         print(tempo)
         likely_key, alt_key = downloaded_audio.print_key()
