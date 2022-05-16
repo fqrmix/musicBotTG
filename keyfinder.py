@@ -106,7 +106,7 @@ class Tonality(object):
         pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
         keys = [pitches [i] + ' major' for i in range(12)] + [pitches [i] + ' minor' for i in range(12)]
 
-        chords_for_keys = {
+        self.chords_for_keys = {
             'С major': {1:'C', 2:'Dm', 3:'Em', 4:'F', 5:'G', 6:'Am', 7:'B[dim]'},
             'С# major': {1:'C#', 2:'D#m', 3:'Fm', 4:'F#', 5:'G#', 6:'A#m', 7:'C[dim]'},
             'D major': {1:'D', 2:'Em', 3:'F#m', 4:'G', 5:'A', 6:'Bm', 7:'C#[dim]'}, 
@@ -133,6 +133,11 @@ class Tonality(object):
             'A# minor': {1:'A#m', 2:'C[dim]', 3:'C#', 4:'D#m', 5:'Fm', 6:'F#', 7:'G#'},
             'B minor': {1:'Bm', 2:'C#[dim]', 3:'D', 4:'Em', 5:'F#m', 6:'G', 7:'A'},
         }
-
-        print(keys)
-
+    
+    def get_chords(self, song_key=None):
+        keys = self.chords_for_keys[song_key].keys()
+        chords = ''
+        for i in keys:
+            single_chord = self.chords_for_keys[song_key][i]
+            chords +=  f'[{i}]:' + single_chord + '\n'
+        return chords
