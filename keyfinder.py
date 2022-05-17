@@ -1,3 +1,5 @@
+from distutils.command.build import build
+import random
 import numpy as np
 import matplotlib.pyplot as plt
 import librosa
@@ -104,7 +106,7 @@ class Tonal_Fragment(object):
 class Tonality(object):
     def __init__(self):
         pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-        keys = [pitches [i] + ' major' for i in range(12)] + [pitches [i] + ' minor' for i in range(12)]
+        self.keys = [pitches [i] + ' major' for i in range(12)] + [pitches [i] + ' minor' for i in range(12)]
 
         self.chords_for_keys = {
             'С major': {1:'C', 2:'Dm', 3:'Em', 4:'F', 5:'G', 6:'Am', 7:'B[dim]'},
@@ -133,11 +135,55 @@ class Tonality(object):
             'A# minor': {1:'A#m', 2:'C[dim]', 3:'C#', 4:'D#m', 5:'Fm', 6:'F#', 7:'G#'},
             'B minor': {1:'Bm', 2:'C#[dim]', 3:'D', 4:'Em', 5:'F#m', 6:'G', 7:'A'},
         }
-    
-    def get_chords(self, song_key=None):
-        keys = self.chords_for_keys[song_key].keys()
-        chords = ''
+
+    def build_chords(self, keys, str_chords, song_key):
+        str_chords = '\n[-----'
+        for key in keys:
+            str_chords += f'--{key}--'
+        str_chords += '-----]\n'
+
         for i in keys:
             single_chord = self.chords_for_keys[song_key][i]
-            chords +=  f'[{i}]:' + single_chord + '\n'
-        return chords
+            str_chords +=  f'[{i}]: ' + single_chord + ', '
+        str_chords += '\n[------------------------------]\n'
+        return str_chords
+    
+    def get_chords(self, song_key):
+        keys = self.chords_for_keys[song_key].keys()
+        chords = ''
+        return self.build_chords(keys, chords, song_key)
+    
+    def get_random_chords(self):
+        random_key = random.choice(self.keys)
+        return random_key, self.get_chords(random_key)
+
+    def get_major_chord_progression(self, song_key):
+        str_progression = ''
+
+        # I V iv IV
+        keys = {1, 5, 6, 4}
+        str_progression += self.build_chords(keys, str_progression, song_key)
+
+        # I vi IV V
+        keys = {1, 6, 4, 5}
+        str_progression += self.build_chords(keys, str_progression, song_key)
+
+        # I IV V
+        keys = {1, 4, 5}
+        str_progression += self.build_chords(keys, str_progression, song_key)
+
+        # ii V I
+        keys = {1, 6, 4, 5}
+        str_progression += self.build_chords(keys, str_progression, song_key)
+        
+        
+        return str_progression
+
+    def get_minor_chord_progression(self, song_key):
+        str_progression = ''
+
+        # I V iv IV
+        keys = {1, 5, 6, 4}
+        str_progression += self.build_chords(keys, str_progression, song_key)     
+        
+        return str_progression
