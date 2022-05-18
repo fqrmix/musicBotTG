@@ -1,10 +1,13 @@
 appdirs==1.4.4
 audioread==2.1.9
+Brotli==1.0.9
 certifi==2021.10.8
 cffi==1.15.0
 charset-normalizer==2.0.12
 cycler==0.11.0
 decorator==5.1.1
+ffmpeg==1.4
+ffprobe==0.5
 fonttools==4.33.3
 idna==3.3
 joblib==1.1.0
@@ -12,12 +15,14 @@ kiwisolver==1.4.2
 librosa==0.9.1
 llvmlite==0.38.0
 matplotlib==3.5.2
+mutagen==1.45.1
 numba==0.55.1
 numpy==1.21.6
 packaging==21.3
 Pillow==9.1.1
 pooch==1.6.0
 pycparser==2.21
+pycryptodomex==3.14.1
 pyparsing==3.0.9
 pyTelegramBotAPI==4.5.1
 python-dateutil==2.8.2
@@ -29,3 +34,5 @@ six==1.16.0
 SoundFile==0.10.3.post1
 threadpoolctl==3.1.0
 urllib3==1.26.9
+websockets==10.3
+yt-dlp==2022.5.18

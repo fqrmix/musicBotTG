@@ -1,12 +1,23 @@
 import telebot
 from keyfinder import *
 from definitions import *
+from youtube import *
 
 botWelcomeMessage = 'Привет!\nДля декодинга аудио файла просто пришли его мне!'
 
 
 bot = telebot.TeleBot(TOKEN)
 
+@bot.message_handler(func=lambda message: True)
+def youtube_download(message):
+    chat_id = message.chat.id
+    if message.text.startswith('https://www.youtube.com'):
+        bot.reply_to(message, 'Начинаю скачивание файла...')
+        try: 
+            filename = get_audio_from_video(message.text)
+        finally: 
+            bot.send_audio(chat_id, audio=open(filename, 'rb'))
+    else: bot.reply_to(message, 'Непонятная ссылка!')
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
