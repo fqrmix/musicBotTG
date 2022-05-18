@@ -109,8 +109,8 @@ class Tonality(object):
         self.keys = [pitches [i] + ' major' for i in range(12)] + [pitches [i] + ' minor' for i in range(12)]
 
         self.chords_for_keys = {
-            'С major': {1:'C', 2:'Dm', 3:'Em', 4:'F', 5:'G', 6:'Am', 7:'B[dim]'},
-            'С# major': {1:'C#', 2:'D#m', 3:'Fm', 4:'F#', 5:'G#', 6:'A#m', 7:'C[dim]'},
+            'C major': {1:'C', 2:'Dm', 3:'Em', 4:'F', 5:'G', 6:'Am', 7:'B[dim]'},
+            'C# major': {1:'C#', 2:'D#m', 3:'Fm', 4:'F#', 5:'G#', 6:'A#m', 7:'C[dim]'},
             'D major': {1:'D', 2:'Em', 3:'F#m', 4:'G', 5:'A', 6:'Bm', 7:'C#[dim]'}, 
             'D# major': {1:'D#', 2:'Fm', 3:'Gm', 4:'G#', 5:'A#', 6:'Cm', 7:'D[dim]'},
             'E major': {1:'E', 2:'F#m', 3:'G#m', 4:'A', 5:'B', 6:'C#m', 7:'D#[dim]'},
@@ -122,8 +122,8 @@ class Tonality(object):
             'A# major': {1:'A#', 2:'Cm', 3:'Dm', 4:'D#', 5:'F', 6:'Gm', 7:'A[dim]'},
             'B major': {1:'B', 2:'C#m', 3:'D#m', 4:'E', 5:'F#', 6:'G#m', 7:'A#[dim]'},
 
-            'С minor': {1:'Cm', 2:'D[dim]', 3:'D#', 4:'Fm', 5:'Gm', 6:'G#', 7:'A#'},
-            'С# minor': {1:'C#m', 2:'D#[dim]', 3:'E', 4:'F#m', 5:'G#m', 6:'A', 7:'B'},
+            'C minor': {1:'Cm', 2:'D[dim]', 3:'D#', 4:'Fm', 5:'Gm', 6:'G#', 7:'A#'},
+            'C# minor': {1:'C#m', 2:'D#[dim]', 3:'E', 4:'F#m', 5:'G#m', 6:'A', 7:'B'},
             'D minor': {1:'Dm', 2:'E[dim]', 3:'F', 4:'Gm', 5:'Am', 6:'A#', 7:'C'},
             'D# minor': {1:'D#m', 2:'F[dim]', 3:'F#', 4:'G#m', 5:'A#m', 6:'B', 7:'C#'},
             'E minor': {1:'Em', 2:'F#[dim]', 3:'G', 4:'Am', 5:'Bm', 6:'C', 7:'D'},
@@ -135,6 +135,18 @@ class Tonality(object):
             'A# minor': {1:'A#m', 2:'C[dim]', 3:'C#', 4:'D#m', 5:'Fm', 6:'F#', 7:'G#'},
             'B minor': {1:'Bm', 2:'C#[dim]', 3:'D', 4:'Em', 5:'F#m', 6:'G', 7:'A'},
         }
+
+        self.major_progressions = {
+            # I V iv IV
+            1: {1: '', 5: '', 6: '', 4: ''},
+            # I vi IV V
+            2: {1: '', 6: '', 4: '', 5: ''},
+            # I IV V
+            3: {1: '', 4: '', 5: ''},
+            # ii V I
+            4: {2: '', 5: '', 1: ''}
+        }
+        self.minor_progressions = {}
 
     def build_chords(self, keys, str_chords, song_key):
         str_chords = '\n[-----'
@@ -159,25 +171,18 @@ class Tonality(object):
 
     def get_major_chord_progression(self, song_key):
         str_progression = ''
-
-        # I V iv IV
-        keys = {1, 5, 6, 4}
-        str_progression += self.build_chords(keys, str_progression, song_key)
-
-        # I vi IV V
-        keys = {1, 6, 4, 5}
-        str_progression += self.build_chords(keys, str_progression, song_key)
-
-        # I IV V
-        keys = {1, 4, 5}
-        str_progression += self.build_chords(keys, str_progression, song_key)
-
-        # ii V I
-        keys = {1, 6, 4, 5}
-        str_progression += self.build_chords(keys, str_progression, song_key)
-        
-        
+        for key in self.major_progressions:
+            str_progression += self.build_chords(self.major_progressions[key], str_progression, song_key)
         return str_progression
+    
+    def get_random_major_chord_progression(self, random_song_key=None):
+        if random_song_key == None: random_song_key = random.choice(self.keys)
+        random_progression_key = random.choice(list(self.major_progressions.keys()))
+        random_progression = self.major_progressions[random_progression_key]
+        return self.build_chords(random_progression, None, random_song_key)
+
+
+
 
     def get_minor_chord_progression(self, song_key):
         str_progression = ''
