@@ -149,15 +149,18 @@ class Tonality(object):
         self.minor_progressions = {}
 
     def build_chords(self, keys, str_chords, song_key):
-        str_chords = '\n[-----'
+        str_chords = '\n[-------'
+        end_str_chords = '\n[-------'
         for key in keys:
             str_chords += f'--{key}--'
-        str_chords += '-----]\n'
+            end_str_chords += '-----'
+        str_chords += '-------]\n'
+        end_str_chords += '-------]\n'
 
         for i in keys:
             single_chord = self.chords_for_keys[song_key][i]
             str_chords +=  f'[{i}]: ' + single_chord + ', '
-        str_chords += '\n[------------------------------]\n'
+        str_chords += end_str_chords
         return str_chords
     
     def get_chords(self, song_key):
@@ -167,7 +170,7 @@ class Tonality(object):
     
     def get_random_chords(self):
         random_key = random.choice(self.keys)
-        return random_key, self.get_chords(random_key)
+        return self.get_chords(random_key)
 
     def get_major_chord_progression(self, song_key):
         str_progression = ''
@@ -180,9 +183,6 @@ class Tonality(object):
         random_progression_key = random.choice(list(self.major_progressions.keys()))
         random_progression = self.major_progressions[random_progression_key]
         return self.build_chords(random_progression, None, random_song_key)
-
-
-
 
     def get_minor_chord_progression(self, song_key):
         str_progression = ''
