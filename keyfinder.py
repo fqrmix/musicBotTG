@@ -1,4 +1,3 @@
-from distutils.command.build import build
 import random
 import numpy as np
 import matplotlib.pyplot as plt
