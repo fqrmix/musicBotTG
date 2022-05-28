@@ -14,23 +14,23 @@ def process_start(message):
 
 @bot.message_handler(commands=['youtube'])
 def get_link(message):
-    link_message = bot.send_message(message.chat.id, 'Пришли ссылку на видео')
+    link_message = bot.send_message(message.chat.id, 'Send me a YouTube link!')
     bot.register_next_step_handler(link_message, youtube_download)
 
 def youtube_download(message):
     chat_id = message.chat.id
     if message.text.startswith('https://www.youtube.com'):
-        bot.reply_to(message, 'Начинаю скачивание файла...')
+        bot.reply_to(message, 'Got a YouTube link\nStarting download...')
         try: 
             filename = get_audio_from_video(message.text)
         finally:
             bot.send_audio(chat_id, audio=open(filename, 'rb'))
     else: 
-        bot.reply_to(message, 'Непонятная ссылка!')
+        bot.reply_to(message, "I can't download from here!")
 
 @bot.message_handler(commands=['keyfinder'])
 def get_audio_file(message):
-    audio_message = bot.send_message(message.chat.id, 'Пришли мне аудиофайл в формате .mp3')
+    audio_message = bot.send_message(message.chat.id, 'Send me a .mp3 file!')
     bot.register_next_step_handler(audio_message, handle_audio_file)
 
 def handle_audio_file(message):
@@ -49,7 +49,7 @@ def handle_audio_file(message):
         except Exception as e:
             print(e)
 
-        bot.reply_to(message, 'Downloaded!')
+        bot.reply_to(message, 'Downloaded! Starting analysis...')
 
         y, sr = librosa.load(audio_path, sr=11025)
         y_harmonic, y_percussive = librosa.effects.hpss(y)
@@ -59,7 +59,7 @@ def handle_audio_file(message):
         likely_key, alt_key = downloaded_audio.print_key()
 
         if alt_key is not None:
-            bot.reply_to(message, f'Song key: {likely_key}\n Maybe it can be a: {alt_key}')
+            bot.reply_to(message, f'Song key: {likely_key}\nMaybe it can be a: {alt_key}')
         else:
             bot.reply_to(message, f'Song key:{likely_key}')
     except Exception as e:
