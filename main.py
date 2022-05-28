@@ -3,28 +3,36 @@ from keyfinder import *
 from definitions import *
 from youtube import *
 
-botWelcomeMessage = 'Привет!\nДля декодинга аудио файла просто пришли его мне!'
-
-
 bot = telebot.TeleBot(TOKEN)
 
-@bot.message_handler(func=lambda message: True)
+@bot.message_handler(commands=['start'])
+def process_start(message):
+    keyboard = telebot.types.ReplyKeyboardMarkup(True)
+    keyboard.row('/youtube || Download audio from YouTube.com')
+    keyboard.row('/keyfinder || Get key of .mp3 song')
+    bot.send_message(message.chat.id, text = 'Press the menu button...', reply_markup = keyboard)
+
+@bot.message_handler(commands=['youtube'])
+def get_link(message):
+    link_message = bot.send_message(message.chat.id, 'Пришли ссылку на видео')
+    bot.register_next_step_handler(link_message, youtube_download)
+
 def youtube_download(message):
     chat_id = message.chat.id
     if message.text.startswith('https://www.youtube.com'):
         bot.reply_to(message, 'Начинаю скачивание файла...')
         try: 
             filename = get_audio_from_video(message.text)
-        finally: 
+        finally:
             bot.send_audio(chat_id, audio=open(filename, 'rb'))
-    else: bot.reply_to(message, 'Непонятная ссылка!')
+    else: 
+        bot.reply_to(message, 'Непонятная ссылка!')
 
-@bot.message_handler(commands=['start', 'help'])
-def send_welcome(message):
-    bot.reply_to(message, botWelcomeMessage)
+@bot.message_handler(commands=['keyfinder'])
+def get_audio_file(message):
+    audio_message = bot.send_message(message.chat.id, 'Пришли мне аудиофайл в формате .mp3')
+    bot.register_next_step_handler(audio_message, handle_audio_file)
 
-
-@bot.message_handler(content_types=['audio'])
 def handle_audio_file(message):
     try:
         chat_id = message.chat.id
