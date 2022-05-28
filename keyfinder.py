@@ -105,7 +105,9 @@ class Tonal_Fragment(object):
 class Tonality(object):
     def __init__(self):
         pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-        self.keys = [pitches [i] + ' major' for i in range(12)] + [pitches [i] + ' minor' for i in range(12)]
+        self.major_keys = [pitches [i] + ' major' for i in range(12)]
+        self.minor_keys = [pitches [i] + ' minor' for i in range(12)]
+        self.keys = self.major_keys + self.minor_keys
 
         self.chords_for_keys = {
             'C major': {1:'C', 2:'Dm', 3:'Em', 4:'F', 5:'G', 6:'Am', 7:'B[dim]'},
@@ -178,10 +180,10 @@ class Tonality(object):
         return str_progression
     
     def get_random_major_chord_progression(self, random_song_key=None):
-        if random_song_key == None: random_song_key = random.choice(self.keys)
+        if random_song_key == None: random_song_key = random.choice(self.major_keys)
         random_progression_key = random.choice(list(self.major_progressions.keys()))
         random_progression = self.major_progressions[random_progression_key]
-        return self.build_chords(random_progression, None, random_song_key)
+        return random_song_key, self.build_chords(random_progression, None, random_song_key)
 
     def get_minor_chord_progression(self, song_key):
         str_progression = ''

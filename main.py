@@ -10,7 +10,10 @@ def process_start(message):
     keyboard = telebot.types.ReplyKeyboardMarkup(True)
     keyboard.row('/youtube || Download audio from YouTube.com')
     keyboard.row('/keyfinder || Get key of .mp3 song')
+    keyboard.row('/randomchords || Get a random chord progression')
     bot.send_message(message.chat.id, text = 'Press the menu button...', reply_markup = keyboard)
+
+# YouTube -> mp3 convert
 
 @bot.message_handler(commands=['youtube'])
 def get_link(message):
@@ -27,6 +30,8 @@ def youtube_download(message):
             bot.send_audio(chat_id, audio=open(filename, 'rb'))
     else: 
         bot.reply_to(message, "I can't download from here!")
+
+# Get key of song
 
 @bot.message_handler(commands=['keyfinder'])
 def get_audio_file(message):
@@ -65,6 +70,24 @@ def handle_audio_file(message):
     except Exception as e:
         bot.reply_to(message, e)
 
+# Random Chord Progression
+
+@bot.message_handler(commands=['randomchords'])
+def get_params(message):
+    keyboard = telebot.types.ReplyKeyboardMarkup(True)
+    keyboard.row('Random')
+    keyboard.row('Specific key')
+    chord_message = bot.send_message(message.chat.id, text = 'Press the menu button...', reply_markup = keyboard)
+    bot.register_next_step_handler(chord_message, get_chords)
+
+def get_chords(message):
+    myTonality = Tonality()
+    chat_id = message.chat.id
+    if message.text == 'Random':
+        progression_key, chord_progression_message = myTonality.get_random_major_chord_progression()
+        bot.reply_to(message, f'Key of progression: {"`[" + progression_key + "]`"}\n\n{"`" + chord_progression_message + "`"}', parse_mode='Markdown')
+        
+# Start
 
 if __name__ == '__main__':
     bot.infinity_polling()
