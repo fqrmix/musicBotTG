@@ -6,5 +6,4 @@ tg-test/
 received/
 tmp/
 test.py
-__pycache__/definitions.cpython-39.pyc
-__pycache__/keyfinder.cpython-39.pyc
+__pycache__/

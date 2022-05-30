@@ -104,9 +104,9 @@ class Tonal_Fragment(object):
 
 class Tonality(object):
     def __init__(self):
-        pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-        self.major_keys = [pitches [i] + ' major' for i in range(12)]
-        self.minor_keys = [pitches [i] + ' minor' for i in range(12)]
+        self.pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+        self.major_keys = [self.pitches [i] + ' major' for i in range(12)]
+        self.minor_keys = [self.pitches [i] + ' minor' for i in range(12)]
         self.keys = self.major_keys + self.minor_keys
 
         self.chords_for_keys = {
