@@ -109,6 +109,9 @@ class Tonality(object):
         self.minor_keys = [self.pitches [i] + ' minor' for i in range(12)]
         self.keys = self.major_keys + self.minor_keys
 
+        self.current_key = ''
+        self.current_tonality = ''
+
         self.chords_for_keys = {
             'C major': {1:'C', 2:'Dm', 3:'Em', 4:'F', 5:'G', 6:'Am', 7:'B[dim]'},
             'C# major': {1:'C#', 2:'D#m', 3:'Fm', 4:'F#', 5:'G#', 6:'A#m', 7:'C[dim]'},

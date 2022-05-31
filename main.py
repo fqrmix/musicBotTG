@@ -36,6 +36,16 @@ def build_keyboard(keyboard_type):
         keyboard.add(*specific_button_list)
         return keyboard
 
+    if keyboard_type == 'specific_tonality':
+        keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
+        chords_menu_button_list = [
+            telebot.types.InlineKeyboardButton(text='Major', callback_data='specific_tonality_major'),
+            telebot.types.InlineKeyboardButton(text='Minor', callback_data='specific_tonality_minor'),
+            telebot.types.InlineKeyboardButton(text='<< Get back', callback_data='back_to_chords')
+        ]
+        keyboard.add(*chords_menu_button_list)
+        return keyboard
+
     if keyboard_type == 'back_to_main':
         keyboard = telebot.types.InlineKeyboardMarkup(row_width=1)
         keyboard.add(telebot.types.InlineKeyboardButton(text='<< Get back', callback_data='back_to_main'))
@@ -48,10 +58,8 @@ def youtube_download(message):
     chat_id = message.chat.id
     if message.text.startswith('https://www.youtube.com'):
         bot.reply_to(message, 'Got a YouTube link\nStarting download...')
-        try: 
-            filename = get_audio_from_video(message.text)
-        finally:
-            bot.send_audio(chat_id, audio=open(filename, 'rb'))
+        filename = get_audio_from_video(message.text)
+        bot.send_audio(chat_id, audio=open(filename, 'rb'))
     else:
         bot.send_message(chat_id, "I can't download from here!\nSend me a correct link!", reply_markup=build_keyboard('back_to_main'))
         bot.register_next_step_handler(message, youtube_download)
@@ -101,11 +109,14 @@ def handle_audio_file(message):
 def main_menu(message):
     bot.send_message(message.chat.id, text = 'Press the menu button...', reply_markup = build_keyboard('main'))
 
+# Global state variables
+
+
+
 # Callback handler
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
-    print(call)
     if call.data == "youtube":
         link_message = bot.edit_message_text(
             chat_id=call.message.chat.id,
@@ -129,14 +140,6 @@ def callback_inline(call):
             text='Random/Specific?', 
             reply_markup=build_keyboard('chords'))
 
-    elif call.data == 'back_to_main':
-        bot.clear_step_handler(call.message)
-        bot.edit_message_text(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-            text='Press the menu button...', 
-            reply_markup=build_keyboard('main'))
-
     elif call.data == 'random':
         myTonality = Tonality()
         progression_key, chord_progression_message = myTonality.get_random_major_chord_progression()
@@ -158,20 +161,38 @@ def callback_inline(call):
             text='Choose the pitch:', 
             reply_markup=build_keyboard('specific'))
             
-    elif call.data.startswith('specific_keys_'):
-        current_key = call.data.replace('specific_keys_', '')
+    elif call.data.startswith('specific_'):
         myTonality = Tonality()
-        progression_key, chord_progression_message = myTonality.get_random_major_chord_progression(current_key  + ' major')
+        myTonality.current_key = 'test'
+        if call.data.startswith('specific_keys_'):
+            myTonality.current_key = call.data.replace('specific_keys_', '')
+            bot.edit_message_text(
+                chat_id=call.message.chat.id,
+                message_id=call.message.message_id,
+                text=f'Key of progression: {myTonality.current_key}\nChoose major/minor:', 
+                reply_markup=build_keyboard('specific_tonality'))
+
+        if call.data.startswith('specific_tonality_'):
+            myTonality.current_tonality = call.data.replace('specific_tonality_', '')
+            progression_key, chord_progression_message = myTonality.get_random_major_chord_progression(myTonality.current_key + myTonality.current_tonality)
+            bot.edit_message_text(
+                chat_id=call.message.chat.id,
+                message_id=call.message.message_id,
+                text=f'Key of progression: `[{myTonality.current_key}]`',
+                parse_mode='Markdown')
+            bot.send_message(
+                call.message.chat.id, 
+                text = f'`{chord_progression_message}`', 
+                parse_mode='Markdown')
+            bot.reply_to(call.message, 'Do you want to do another action?\nType /start')
+
+    elif call.data == 'back_to_main':
+        bot.clear_step_handler(call.message)
         bot.edit_message_text(
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
-            text=f'Key of progression: `[{current_key}]`',
-            parse_mode='Markdown')
-        bot.send_message(
-            call.message.chat.id, 
-            text = f'`{chord_progression_message}`', 
-            parse_mode='Markdown')
-        bot.reply_to(call.message, 'Do you want to do another action?\nType /start')
+            text='Press the menu button...', 
+            reply_markup=build_keyboard('main'))
 
 # Start infinity polling (loop)
 
