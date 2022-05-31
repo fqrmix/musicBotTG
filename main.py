@@ -4,6 +4,7 @@ from definitions import *
 from youtube import *
 
 bot = telebot.TeleBot(TOKEN)
+myTonality = Tonality()
 
 def build_keyboard(keyboard_type):
     if keyboard_type == 'main':
@@ -36,11 +37,11 @@ def build_keyboard(keyboard_type):
         keyboard.add(*specific_button_list)
         return keyboard
 
-    if keyboard_type == 'specific_tonality':
+    if keyboard_type == 'specific_scale':
         keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
         chords_menu_button_list = [
-            telebot.types.InlineKeyboardButton(text='Major', callback_data='specific_tonality_major'),
-            telebot.types.InlineKeyboardButton(text='Minor', callback_data='specific_tonality_minor'),
+            telebot.types.InlineKeyboardButton(text='Major', callback_data='specific_scale_major'),
+            telebot.types.InlineKeyboardButton(text='Minor', callback_data='specific_scale_minor'),
             telebot.types.InlineKeyboardButton(text='<< Get back', callback_data='back_to_chords')
         ]
         keyboard.add(*chords_menu_button_list)
@@ -109,10 +110,6 @@ def handle_audio_file(message):
 def main_menu(message):
     bot.send_message(message.chat.id, text = 'Press the menu button...', reply_markup = build_keyboard('main'))
 
-# Global state variables
-
-
-
 # Callback handler
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -141,12 +138,11 @@ def callback_inline(call):
             reply_markup=build_keyboard('chords'))
 
     elif call.data == 'random':
-        myTonality = Tonality()
         progression_key, chord_progression_message = myTonality.get_random_major_chord_progression()
         bot.edit_message_text(
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
-            text=f'Key of progression: `[{progression_key}]`',
+            text=f'Scale of progression: `[{progression_key}]`',
             parse_mode='Markdown')
         bot.send_message(
             call.message.chat.id, 
@@ -162,23 +158,22 @@ def callback_inline(call):
             reply_markup=build_keyboard('specific'))
             
     elif call.data.startswith('specific_'):
-        myTonality = Tonality()
-        myTonality.current_key = 'test'
         if call.data.startswith('specific_keys_'):
             myTonality.current_key = call.data.replace('specific_keys_', '')
             bot.edit_message_text(
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
                 text=f'Key of progression: {myTonality.current_key}\nChoose major/minor:', 
-                reply_markup=build_keyboard('specific_tonality'))
+                reply_markup=build_keyboard('specific_scale'))
 
-        if call.data.startswith('specific_tonality_'):
-            myTonality.current_tonality = call.data.replace('specific_tonality_', '')
-            progression_key, chord_progression_message = myTonality.get_random_major_chord_progression(myTonality.current_key + myTonality.current_tonality)
+        if call.data.startswith('specific_scale_'):
+            myTonality.current_scale = call.data.replace('specific_scale_', '')
+            myTonality.current_tonality = myTonality.current_key + ' ' + myTonality.current_scale
+            progression_key, chord_progression_message = myTonality.get_random_major_chord_progression(myTonality.current_tonality)
             bot.edit_message_text(
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
-                text=f'Key of progression: `[{myTonality.current_key}]`',
+                text=f'Scale of progression: `[{myTonality.current_tonality}]`',
                 parse_mode='Markdown')
             bot.send_message(
                 call.message.chat.id, 

@@ -111,6 +111,7 @@ class Tonality(object):
 
         self.current_key = ''
         self.current_tonality = ''
+        self.current_scale = ''
 
         self.chords_for_keys = {
             'C major': {1:'C', 2:'Dm', 3:'Em', 4:'F', 5:'G', 6:'Am', 7:'B[dim]'},
