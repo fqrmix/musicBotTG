@@ -94,13 +94,12 @@ def handle_audio_file(message):
             y_harmonic, y_percussive = librosa.effects.hpss(y)
             downloaded_audio = Tonal_Fragment(y_harmonic, sr, tend=22)
             tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
-            print(tempo)
             likely_key, alt_key = downloaded_audio.print_key()
 
             if alt_key is not None:
-                bot.reply_to(message, f'Song key: {likely_key}\nMaybe it can be a: {alt_key}')
+                bot.reply_to(message, f'Song key: `{likely_key}`\nMaybe it can be a: `{alt_key}`\nBPM: `{round(tempo)}`', parse_mode='Markdown')
             else:
-                bot.reply_to(message, f'Song key:{likely_key}')
+                bot.reply_to(message, f'Song key: `{likely_key}`\nBPM: `{round(tempo)}`', parse_mode='Markdown')
         except Exception as e:
             bot.reply_to(message, e)
 
@@ -148,7 +147,6 @@ def callback_inline(call):
             call.message.chat.id, 
             text = f'`{chord_progression_message}`', 
             parse_mode='Markdown')
-        bot.reply_to(call.message, 'Do you want to do another action?\nType /start')
 
     elif call.data == 'specific':
         bot.edit_message_text(
@@ -179,7 +177,6 @@ def callback_inline(call):
                 call.message.chat.id, 
                 text = f'`{chord_progression_message}`', 
                 parse_mode='Markdown')
-            bot.reply_to(call.message, 'Do you want to do another action?\nType /start')
 
     elif call.data == 'back_to_main':
         bot.clear_step_handler(call.message)
