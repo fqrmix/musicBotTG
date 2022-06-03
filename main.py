@@ -1,3 +1,4 @@
+from email.mime import audio
 import telebot
 from keyfinder import *
 from definitions import *
@@ -94,13 +95,13 @@ def handle_audio_file(message):
             downloaded_audio = Tonal_Fragment(y_harmonic, sr, tend=22)
             tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
             likely_key, alt_key = downloaded_audio.print_key()
-            del y, sr, y_harmonic, downloaded_audio, tempo
+            del y, sr, y_harmonic, downloaded_audio
 
             if alt_key is not None:
                 bot.reply_to(message, f'Song key: `{likely_key}`\nMaybe it can be a: `{alt_key}`\nBPM: `{round(tempo)}`', parse_mode='Markdown')
             else:
                 bot.reply_to(message, f'Song key: `{likely_key}`\nBPM: `{round(tempo)}`', parse_mode='Markdown')
-            del likely_key, alt_key
+            del likely_key, alt_key, tempo, audio_file
         except Exception as e:
             bot.reply_to(message, e)
 
