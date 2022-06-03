@@ -60,7 +60,9 @@ def youtube_download(message):
     if message.text.startswith('https://www.youtube.com'):
         bot.reply_to(message, 'Got a YouTube link\nStarting download...')
         filename = get_audio_from_video(message.text)
-        bot.send_audio(chat_id, audio=open(filename, 'rb'))
+        with open(filename, 'rb') as audio:
+            bot.send_audio(chat_id, audio)
+            audio.flush()
     else:
         bot.send_message(chat_id, "I can't download from here!\nSend me a correct link!", reply_markup=build_keyboard('back_to_main'))
         bot.register_next_step_handler(message, youtube_download)
@@ -81,12 +83,9 @@ def handle_audio_file(message):
             src = ROOT_DIR + "/received/"
 
             audio_path = src + message.audio.file_name
-
-            try:
-                with open(audio_path, 'wb') as new_file:
-                    new_file.write(downloaded_file)
-            except Exception as e:
-                print(e)
+            with open(audio_path, 'wb') as audio_file:
+                audio_file.write(downloaded_file)
+                audio_file.flush()
 
             bot.reply_to(message, 'Downloaded! Starting analysis...')
 
@@ -95,11 +94,13 @@ def handle_audio_file(message):
             downloaded_audio = Tonal_Fragment(y_harmonic, sr, tend=22)
             tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
             likely_key, alt_key = downloaded_audio.print_key()
+            del y, sr, y_harmonic, downloaded_audio, tempo
 
             if alt_key is not None:
                 bot.reply_to(message, f'Song key: `{likely_key}`\nMaybe it can be a: `{alt_key}`\nBPM: `{round(tempo)}`', parse_mode='Markdown')
             else:
                 bot.reply_to(message, f'Song key: `{likely_key}`\nBPM: `{round(tempo)}`', parse_mode='Markdown')
+            del likely_key, alt_key
         except Exception as e:
             bot.reply_to(message, e)
 
@@ -147,6 +148,7 @@ def callback_inline(call):
             call.message.chat.id, 
             text = f'`{chord_progression_message}`', 
             parse_mode='Markdown')
+        del progression_key, chord_progression_message
 
     elif call.data == 'specific':
         bot.edit_message_text(
@@ -177,6 +179,7 @@ def callback_inline(call):
                 call.message.chat.id, 
                 text = f'`{chord_progression_message}`', 
                 parse_mode='Markdown')
+            del myTonality.current_scale, myTonality.current_tonality, myTonality.current_key, progression_key, chord_progression_message
 
     elif call.data == 'back_to_main':
         bot.clear_step_handler(call.message)
