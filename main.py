@@ -87,7 +87,8 @@ def handle_audio_file(message):
             with open(audio_path, 'wb') as audio_file:
                 audio_file.write(downloaded_file)
                 audio_file.flush()
-
+                
+            del downloaded_file, file_info
             bot.reply_to(message, 'Downloaded! Starting analysis...')
 
             y, sr = librosa.load(audio_path, sr=11025)
