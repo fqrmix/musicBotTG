@@ -47,6 +47,15 @@ def build_keyboard(keyboard_type):
         ]
         keyboard.add(*chords_menu_button_list)
         return keyboard
+    
+    if keyboard_type == 'from_youtube':
+        keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
+        chords_menu_button_list = [
+            telebot.types.InlineKeyboardButton(text='Yes', callback_data='from_youtube'),
+            telebot.types.InlineKeyboardButton(text='No', callback_data='back_to_main'),
+        ]
+        keyboard.add(*chords_menu_button_list)
+        return keyboard
 
     if keyboard_type == 'back_to_main':
         keyboard = telebot.types.InlineKeyboardMarkup(row_width=1)
@@ -64,32 +73,37 @@ def youtube_download(message):
         with open(filename, 'rb') as audio:
             bot.send_audio(chat_id, audio)
             audio.flush()
+        handle_audio_file(message, from_youtube=filename)
+        
     else:
         bot.send_message(chat_id, "I can't download from here!\nSend me a correct link!", reply_markup=build_keyboard('back_to_main'))
         bot.register_next_step_handler(message, youtube_download)
 
 # Get key of song
 
-def handle_audio_file(message):
+def handle_audio_file(message, from_youtube=None):
     chat_id = message.chat.id
     if message.content_type != 'audio':
             bot.send_message(chat_id, f"I am waiting for audio file!\nNot for {message.content_type}!", reply_markup=build_keyboard('back_to_main'))
             bot.register_next_step_handler(message, handle_audio_file)
     else:
         try:
-            chat_id = message.chat.id
-            file_info = bot.get_file(message.audio.file_id)
-            downloaded_file = bot.download_file(file_info.file_path)
+            if from_youtube is None:
+                chat_id = message.chat.id
+                file_info = bot.get_file(message.audio.file_id)
+                downloaded_file = bot.download_file(file_info.file_path)
 
-            src = ROOT_DIR + "/received/"
+                src = ROOT_DIR + "/received/"
 
-            audio_path = src + message.audio.file_name
-            with open(audio_path, 'wb') as audio_file:
-                audio_file.write(downloaded_file)
-                audio_file.flush()
+                audio_path = src + message.audio.file_name
+                with open(audio_path, 'wb') as audio_file:
+                    audio_file.write(downloaded_file)
+                    audio_file.flush()
                 
-            del downloaded_file, file_info
-            bot.reply_to(message, 'Downloaded! Starting analysis...')
+                del downloaded_file, file_info
+            else:
+                audio_path = from_youtube
+            bot.reply_to(message, 'Starting analysis...')
 
             y, sr = librosa.load(audio_path, sr=11025)
             y_harmonic, y_percussive = librosa.effects.hpss(y)
@@ -123,7 +137,7 @@ def callback_inline(call):
             text='Send me a YouTube link!',
             reply_markup=build_keyboard('back_to_main'))
         bot.register_next_step_handler(link_message, youtube_download)
-
+    
     elif call.data == "keyfinder":
         audio_message = bot.edit_message_text(
             chat_id=call.message.chat.id,
