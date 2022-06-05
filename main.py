@@ -1,4 +1,3 @@
-from email.mime import audio
 import telebot
 from keyfinder import *
 from definitions import *
@@ -47,15 +46,6 @@ def build_keyboard(keyboard_type):
         ]
         keyboard.add(*chords_menu_button_list)
         return keyboard
-    
-    if keyboard_type == 'from_youtube':
-        keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
-        chords_menu_button_list = [
-            telebot.types.InlineKeyboardButton(text='Yes', callback_data='from_youtube'),
-            telebot.types.InlineKeyboardButton(text='No', callback_data='back_to_main'),
-        ]
-        keyboard.add(*chords_menu_button_list)
-        return keyboard
 
     if keyboard_type == 'back_to_main':
         keyboard = telebot.types.InlineKeyboardMarkup(row_width=1)
@@ -65,42 +55,47 @@ def build_keyboard(keyboard_type):
 
 # YouTube -> mp3 convert
 
-def youtube_download(message):
-    chat_id = message.chat.id
+def youtube_download(message, handle_audio=None):
     if message.text.startswith('https://www.youtube.com'):
+        bot.edit_message_reply_markup(message.chat_id, message.message_id, reply_markup='')
         bot.reply_to(message, 'Got a YouTube link\nStarting download...')
         filename = get_audio_from_video(message.text)
         with open(filename, 'rb') as audio:
-            bot.send_audio(chat_id, audio)
+            bot.send_audio(message.chat_id, audio)
             audio.flush()
         handle_audio_file(message, from_youtube=filename)
+        del filename
         
     else:
-        bot.send_message(chat_id, "I can't download from here!\nSend me a correct link!", reply_markup=build_keyboard('back_to_main'))
+        bot.edit_message_text(
+            chat_id = message.chat_id, 
+            message_id = message.message_id,
+            text = "I can't download from here!\nSend me a correct link!", 
+            reply_markup=build_keyboard('back_to_main'))
         bot.register_next_step_handler(message, youtube_download)
 
 # Get key of song
 
 def handle_audio_file(message, from_youtube=None):
-    chat_id = message.chat.id
     if message.content_type != 'audio' and from_youtube is None:
-            bot.send_message(chat_id, f"I am waiting for audio file!\nNot for {message.content_type}!", reply_markup=build_keyboard('back_to_main'))
+            bot.edit_message_text(
+                chat_id = message.chat.id, 
+                message_id = message.message_id,
+                text = f"I am waiting for audio file!\nNot for {message.content_type}!", 
+                reply_markup=build_keyboard('back_to_main'))
             bot.register_next_step_handler(message, handle_audio_file)
     else:
         try:
             if from_youtube is None:
-                chat_id = message.chat.id
                 file_info = bot.get_file(message.audio.file_id)
                 downloaded_file = bot.download_file(file_info.file_path)
-
                 src = ROOT_DIR + "/received/"
-
                 audio_path = src + message.audio.file_name
                 with open(audio_path, 'wb') as audio_file:
                     audio_file.write(downloaded_file)
                     audio_file.flush()
-                
                 del downloaded_file, file_info, audio_file
+
             else:
                 audio_path = from_youtube
             bot.reply_to(message, 'Starting analysis...')
@@ -111,7 +106,7 @@ def handle_audio_file(message, from_youtube=None):
             tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
             likely_key, alt_key = downloaded_audio.print_key()
             del y, sr, y_harmonic, downloaded_audio
-
+            bot.edit_message_reply_markup(message.chat_id, message.message_id, reply_markup='')
             if alt_key is not None:
                 bot.reply_to(message, f'Song key: `{likely_key}`\nMaybe it can be a: `{alt_key}`\nBPM: `{round(tempo)}`', parse_mode='Markdown')
             else:
