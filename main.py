@@ -83,7 +83,7 @@ def youtube_download(message):
 
 def handle_audio_file(message, from_youtube=None):
     chat_id = message.chat.id
-    if message.content_type != 'audio':
+    if message.content_type != 'audio' and from_youtube is None:
             bot.send_message(chat_id, f"I am waiting for audio file!\nNot for {message.content_type}!", reply_markup=build_keyboard('back_to_main'))
             bot.register_next_step_handler(message, handle_audio_file)
     else:
