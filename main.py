@@ -57,18 +57,18 @@ def build_keyboard(keyboard_type):
 
 def youtube_download(message, handle_audio=None):
     if message.text.startswith('https://www.youtube.com'):
-        bot.edit_message_reply_markup(message.chat_id, message.message_id, reply_markup='')
+        bot.edit_message_reply_markup(message.chat.id, message.message_id, reply_markup='')
         bot.reply_to(message, 'Got a YouTube link\nStarting download...')
         filename = get_audio_from_video(message.text)
         with open(filename, 'rb') as audio:
-            bot.send_audio(message.chat_id, audio)
+            bot.send_audio(message.chat.id, audio)
             audio.flush()
         handle_audio_file(message, from_youtube=filename)
         del filename
         
     else:
         bot.edit_message_text(
-            chat_id = message.chat_id, 
+            chat_id = message.chat.id, 
             message_id = message.message_id,
             text = "I can't download from here!\nSend me a correct link!", 
             reply_markup=build_keyboard('back_to_main'))
@@ -106,7 +106,7 @@ def handle_audio_file(message, from_youtube=None):
             tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
             likely_key, alt_key = downloaded_audio.print_key()
             del y, sr, y_harmonic, downloaded_audio
-            bot.edit_message_reply_markup(message.chat_id, message.message_id, reply_markup='')
+            bot.edit_message_reply_markup(message.chat.id, message.message_id, reply_markup='')
             if alt_key is not None:
                 bot.reply_to(message, f'Song key: `{likely_key}`\nMaybe it can be a: `{alt_key}`\nBPM: `{round(tempo)}`', parse_mode='Markdown')
             else:
