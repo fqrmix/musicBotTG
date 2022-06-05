@@ -100,7 +100,7 @@ def handle_audio_file(message, from_youtube=None):
                     audio_file.write(downloaded_file)
                     audio_file.flush()
                 
-                del downloaded_file, file_info
+                del downloaded_file, file_info, audio_file
             else:
                 audio_path = from_youtube
             bot.reply_to(message, 'Starting analysis...')
@@ -116,7 +116,7 @@ def handle_audio_file(message, from_youtube=None):
                 bot.reply_to(message, f'Song key: `{likely_key}`\nMaybe it can be a: `{alt_key}`\nBPM: `{round(tempo)}`', parse_mode='Markdown')
             else:
                 bot.reply_to(message, f'Song key: `{likely_key}`\nBPM: `{round(tempo)}`', parse_mode='Markdown')
-            del likely_key, alt_key, tempo, audio_file
+            del likely_key, alt_key, tempo
         except Exception as e:
             bot.reply_to(message, e)
 
